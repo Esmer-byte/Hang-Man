@@ -60,7 +60,7 @@
    <script>
       var letterList = [];
       var length = 0;
-            
+      var win = 0, lose = 0;      
             function startGame() {
             var i = 0, j = 100, y = 1000;
             var word = $('#theWord').val();
@@ -84,12 +84,15 @@
               i++;j++;y += 100;
             }
             length = i;
+            lose = i;
             return false;
            }
-           var win = 0, lose = 15;
-      
+           
+           
            function checkGuess() {
+            alert(lose);
             var letter = $('#letter').val();
+            var ok = 0, loseCount = 0;
             if(letter.length != 1) {
               alert("You can only introduce 1 letter!")
             } else {
@@ -101,8 +104,13 @@
                 y = i * 100 + 1000;
                 $('#' + y).hide();win++;
                 $('#' + x).show();
-                $('#' + i).hide();
+                ok = 1;
              }  
+           }
+           if(ok === 0) {
+            lose--;
+            minusLife(lose);
+            
            }
            winLoss();
          }
@@ -117,6 +125,11 @@
                 $('#restartLose').show();  
                 $('#hangman').hide();
                }
+         }
+         
+         function minusLife(lose) {
+          $('#' + lose).hide();
+          
          }
          function restartGame() {
           location.reload();
