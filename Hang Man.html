@@ -52,6 +52,9 @@
       <div id="list1">
       </div>
       </div>
+          <div class="wrapper">
+         <button class="button btn btn-dark" onclick="return giveHint();" id="Hint" >Hint</button>
+          </div>
       </div>
       <script>
          $('#hangman').hide();
@@ -72,7 +75,7 @@
                                     <font size="+4">Hang Man</font>`);
             while(word.length > i) {
               $('#list').append(`
-                <button id= "`+ i +`" type="button" class="btn btn-dark btn-lg"><i class="las la-question-circle"></i></button>  
+                <button id= "`+ i +`" type="button" class="btn btn-danger btn-lg"><i class="las la-heart"></i></button>  
                 `);
               $('#list1').append(`
                 <button id= "`+ j +`" type="button" class="btn btn-dark btn-lg">`+ letterList[0][i] +`</i></button>  
@@ -87,10 +90,10 @@
             lose = i;
             return false;
            }
-           
-           
+
+
            function checkGuess() {
-            alert(lose);
+            
             var letter = $('#letter').val();
             var ok = 0, loseCount = 0;
             if(letter.length != 1) {
@@ -110,14 +113,14 @@
            if(ok === 0) {
             lose--;
             minusLife(lose);
-            
            }
+
            winLoss();
          }
            return false;
          }
          function winLoss() {
-          if(win == length) {
+          if(win >= length) {
                 $('#restartWin').show();
                 $('#hangman').hide();
       
@@ -134,7 +137,39 @@
          function restartGame() {
           location.reload();
          }
+         var arr = [], OK2 = 1;
+         function giveHint(min, max) {
+            min = 0; max = length;
+            if(OK2 == 1) {
+              arr[1000] = max;
+              OK2 = 0;
+            }
+            var cycle = Math.floor(max / 2);
+            while(cycle != 0) {
+            if(arr[1000] > Math.floor(max / 2)) {
+            var OK = 1;
+            while(OK == 1) {
+            var random = Math.floor(Math.random() * (max - min) + min);
+            
+            if(arr.indexOf(random) == -1) {  
+              OK = 0;
+              arr.push(random);
+            } else {
+              OK = 1;
+            }
+          }
+          var random_x = random + 100, random_y = random * 100 + 1000;   
+          $('#' + random_x).show();
+          $('#' + random_y).hide();
+          arr[1000] -= 1;
+          win++;
+          } 
+          cycle--;
+        }
+            return false;
+         }
            
       
    </script>
+         
 </html>
