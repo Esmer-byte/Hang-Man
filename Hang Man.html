@@ -20,16 +20,7 @@
          top: 50%;
          }
       </style>
-      <div class="wrapper">
-         <button class="button btn btn-success" onclick="return restartGame();" id="restartWin" >You won!</button>
-      </div>
-      <div class="wrapper">
-         <button class="button btn btn-danger" onclick="return restartGame();" id="restartLose" >You lost!</button>
-      </div>
-      <script>
-         $('#restartWin').hide();
-         $('#restartLose').hide();
-      </script>
+      
       <div id="button" class="container w-150 p-5">
          <div class="card-header" style="background-color: #eba13c; font-family:Brush Script MT" font size="+22">
             <font size="+4">Introduce a word:</font>
@@ -39,6 +30,16 @@
             <button type="submit" class="btn btn-primary" onclick="return startGame();" style="background-color: #8e0f7b;"><i class="las la-skull"></i> Begin! <i class="las la-skull"></i></button>
          </div>
       </div>
+      <div class="wrapper">
+         <button class="button btn btn-success" onclick="return restartGame();" id="restartWin" > You won!</button>
+      </div>
+      <div class="wrapper">
+         <button class="button btn btn-danger" onclick="return restartGame();" id="restartLose" >You lost!</button>
+      </div>
+      <script>
+         $('#restartWin').hide();
+         $('#restartLose').hide();
+      </script>
       <div id="hangman" class="container w-120 p-5">
       <div id="list">
       </div>
@@ -52,18 +53,15 @@
       <div id="list1">
       </div>
       </div>
-          <div class="wrapper">
-         <button class="button btn btn-dark" onclick="return giveHint();" id="Hint" >Hint</button>
-          </div>
+     
       </div>
-      <script>
-         $('#hangman').hide();
-      </script>
    </body>
    <script>
+      $('#hangman').hide();
       var letterList = [];
       var length = 0;
-      var win = 0, lose = 0;      
+      var win = 0, lose = 0;
+         
             function startGame() {
             var i = 0, j = 100, y = 1000;
             var word = $('#theWord').val();
@@ -88,10 +86,11 @@
             }
             length = i;
             lose = i;
+            giveHint(); 
             return false;
            }
-
-
+      
+      
            function checkGuess() {
             
             var letter = $('#letter').val();
@@ -114,7 +113,7 @@
             lose--;
             minusLife(lose);
            }
-
+      
            winLoss();
          }
            return false;
@@ -150,7 +149,6 @@
             var OK = 1;
             while(OK == 1) {
             var random = Math.floor(Math.random() * (max - min) + min);
-            
             if(arr.indexOf(random) == -1) {  
               OK = 0;
               arr.push(random);
@@ -171,5 +169,4 @@
            
       
    </script>
-         
 </html>
