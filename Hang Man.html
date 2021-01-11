@@ -62,7 +62,7 @@
       $('#hangman').hide();
       var canvas = document.getElementById("canvas");
       var letterList = [];
-      var checkList = [];
+      var checkList = [], letteridList = [];
       var length = 0;
       var win = 0, lose = 0;
       
@@ -102,6 +102,7 @@
            }
       
            function checkGuess() {
+            
             if(instaWin() != 1) {
             var letter = $('#letter').val();
             var guessmade = 0;
@@ -111,23 +112,25 @@
             var i, correctletter, hiddenletter;
             for(i = 0; i < length; i++) {
               correctletter = 0; hiddenletter = 0;
-              if(checkList.indexOf(letter) == -1) {
               if(letter == letterList[0][i]) {
                 checkList.push(letterList[0][i]);
                 correctletter = i + 100;
                 hiddenletter = i * 100 + 1000;
-                $('#' + hiddenletter).hide();win++;
+                $('#' + hiddenletter).hide();
                 $('#' + correctletter).show();
                 guessmade = 1;
+                if(letteridList.indexOf(correctletter) == -1 && letteridList.indexOf(letter) == -1)
+                 win++; 
+                }
                 
-             }  
-            }
+                
            }
+           letteridList.push(letter);
            if(guessmade === 0) {
             lose--;
             minusLife(lose);
            }
-      
+           
            winLoss();
          }
          } else {
@@ -135,6 +138,7 @@
          } 
            return false;
          }
+
          function winLoss() {
           if(win >= length) {
                 $('#restartWin').show();
@@ -232,15 +236,15 @@
             }
           }
           var random_x = random + 100, random_y = random * 100 + 1000;   
-          $('#' + random_x).show();
+          $('#' + random_x).show(); letteridList.push(random_x);
           $('#' + random_y).hide();
           array[1000] -= 1;
           win++;
           } 
           cycle--;
-        }
+          }
             return false;
-         }
+        }
       
    </script>
 </html>
