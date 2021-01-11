@@ -20,21 +20,20 @@
          top: 50%;
          }
       </style>
-      
       <div id="button" class="container w-150 p-5">
          <div class="card-header" style="background-color: #eba13c; font-family:Brush Script MT" font size="+22">
             <font size="+4">Introduce a word:</font>
          </div>
          <div class="card">
-            <input type="text" class="form-control" id="theWord" style="background-color: #eee;">
+            <input type="text" class="form-control" id="theWord" style="background-color: #eee;" autocomplete="off">
             <button type="submit" class="btn btn-primary" onclick="return startGame();" style="background-color: #8e0f7b;"><i class="las la-skull"></i> Begin! <i class="las la-skull"></i></button>
          </div>
       </div>
       <div class="wrapper">
-         <button class="button btn btn-success" onclick="return restartGame();" id="restartWin" > You won!</button>
+         <button class="button btn btn-success" onclick="return restartGame();" id="restartWin" > <i class="las la-dove"></i> You won! <i class="las la-dove"></i></button>
       </div>
       <div class="wrapper">
-         <button class="button btn btn-danger" onclick="return restartGame();" id="restartLose" >You lost!</button>
+         <button class="button btn btn-danger" onclick="return restartGame();" id="restartLose" ><i class="las la-skull-crossbones"></i> You lost! <i class="las la-skull-crossbones"></i></button>
       </div>
       <script>
          $('#restartWin').hide();
@@ -45,77 +44,95 @@
       </div>
       <form>
          <div class="mb-3">
-            <label>Guess the letters!</label>
-            <input type="text" class="form-control" id="letter">
-            <button type="submit" class="btn btn-danger" onclick="return checkGuess();"><i class="las la-skull"></i> Make a guess <i class="las la-skull"></i></button>
+         <label>Guess the letters!</label>
+         <input type="text" class="form-control" id="letter" autocomplete="off">
+         <button type="submit" class="btn btn-danger" onclick="return checkGuess();"><i class="las la-skull"></i> Make a guess <i class="las la-skull"></i></button>
       </form>
       <div id="hangmanWord" class="container w-120 w-5">
-      <div id="list1">
+         <div id="list1">
+         </div>
       </div>
-      </div>
-     
+      <div class="wrapper">
+         <canvas id="canvas" width="400px" height="300px" >
+            Your browser does not support HTML5 Canvas element! :(
+         </canvas>
       </div>
    </body>
    <script>
       $('#hangman').hide();
+      var canvas = document.getElementById("canvas");
       var letterList = [];
+      var checkList = [];
       var length = 0;
       var win = 0, lose = 0;
-         
+      
+            function instaWin() {
+              var word = $('#theWord').val();
+              var guessedword = $('#letter').val();
+              if(word == guessedword) {
+                win = 8;
+                winLoss();
+                return 1;
+              }
+              return false;
+            }
+      
             function startGame() {
-            var i = 0, j = 100, y = 1000;
+            var i = 0, correctletter = 100, hiddenletter = 1000;
             var word = $('#theWord').val();
             $('#button').hide();
             $('#hangman').show();
-            
             letterList.push(word.toLowerCase());
             $('#list').append(`<div class="card-header"style="background-color: #eba13c; font-family:Brush Script MT">
                                     <font size="+4">Hang Man</font>`);
             while(word.length > i) {
-              $('#list').append(`
-                <button id= "`+ i +`" type="button" class="btn btn-danger btn-lg"><i class="las la-heart"></i></button>  
+              $('#list1').append(`
+                <button id= "`+ correctletter +`" type="button" class="btn btn-dark btn-lg">`+ letterList[0][i] +`</i></button>  
                 `);
               $('#list1').append(`
-                <button id= "`+ j +`" type="button" class="btn btn-dark btn-lg">`+ letterList[0][i] +`</i></button>  
+                <button id= "`+ hiddenletter +`" type="button" class="btn btn-dark btn-lg"><i class="las la-question-circle"></i></i></button>  
                 `);
-              $('#list1').append(`
-                <button id= "`+ y +`" type="button" class="btn btn-dark btn-lg"><i class="las la-question-circle"></i></i></button>  
-                `);
-              $('#' + j).hide();
-              i++;j++;y += 100;
+              $('#' + correctletter).hide();
+              i++; correctletter++; hiddenletter += 100;
             }
             length = i;
-            lose = i;
+            lose = 7;
             giveHint(); 
             return false;
            }
       
-      
            function checkGuess() {
-            
+            if(instaWin() != 1) {
             var letter = $('#letter').val();
-            var ok = 0, loseCount = 0;
-            if(letter.length != 1) {
+            var guessmade = 0;
+            if(letter.length != 1 || letter.length == 0) {
               alert("You can only introduce 1 letter!")
             } else {
-            var i, x, y;
+            var i, correctletter, hiddenletter;
             for(i = 0; i < length; i++) {
-              x = 0; y = 0;
+              correctletter = 0; hiddenletter = 0;
+              if(checkList.indexOf(letter) == -1) {
               if(letter == letterList[0][i]) {
-                x = i + 100;
-                y = i * 100 + 1000;
-                $('#' + y).hide();win++;
-                $('#' + x).show();
-                ok = 1;
+                checkList.push(letterList[0][i]);
+                correctletter = i + 100;
+                hiddenletter = i * 100 + 1000;
+                $('#' + hiddenletter).hide();win++;
+                $('#' + correctletter).show();
+                guessmade = 1;
+                
              }  
+            }
            }
-           if(ok === 0) {
+           if(guessmade === 0) {
             lose--;
             minusLife(lose);
            }
       
            winLoss();
          }
+         } else {
+           winLoss();
+         } 
            return false;
          }
          function winLoss() {
@@ -130,28 +147,86 @@
          }
          
          function minusLife(lose) {
-          $('#' + lose).hide();
           
+          if (canvas.getContext("2d")) { // Check HTML5 canvas support
+            var context = canvas.getContext("2d"); // get Canvas Context object
+            if(lose == 6) {
+            context.beginPath();
+            context.moveTo(200, 80)
+            context.fillStyle = "bisque"; // #ffe4c4
+            context.arc(200, 50, 30, 0, Math.PI * 2, true); // draw circle for head
+            // (x, y) center, radius, start angle, end angle, anticlockwise
+            context.fill();
+            }
+            if(lose == 5) {
+            context.beginPath();
+            context.strokeStyle = "red"; // color
+            context.lineWidth = 3;
+            context.arc(200, 80, 20, -0.7, Math.PI * 1 + 0.7 , true); // draw semicircle for frowning
+            context.stroke();
+            }
+            if(lose == 4) {
+            // eyes
+            context.beginPath();
+            context.fillStyle = "green"; // color
+            context.arc(190, 45, 3, 0, Math.PI * 2, true); // draw left eye
+            context.fill();
+            context.arc(210, 45, 3, 0, Math.PI * 2, true); // draw right eye
+            context.fill();
+            }
+            if(lose == 3) {
+            // body
+            context.beginPath();
+            context.moveTo(200, 80);
+            context.lineTo(200, 180);
+            context.strokeStyle = "navy";
+            context.stroke();
+            }
+            if(lose == 2) {
+            // arms
+            context.beginPath();
+            context.strokeStyle = "#0000ff"; // blue
+            context.moveTo(200, 80);
+            context.lineTo(150, 130);
+            context.moveTo(200, 80);
+            context.lineTo(250, 130);
+            context.stroke();
+            }
+            if(lose == 1) {
+            // legs
+            context.beginPath();
+            context.strokeStyle = "orange";
+            context.moveTo(200, 180);
+            context.lineTo(150, 280);
+            context.moveTo(200, 180);
+            context.lineTo(250, 280);
+            context.stroke();
+            }
+           } 
          }
          function restartGame() {
           location.reload();
          }
-         var arr = [], OK2 = 1;
-         function giveHint(min, max) {
-            min = 0; max = length;
-            if(OK2 == 1) {
-              arr[1000] = max;
-              OK2 = 0;
+         var array = [], marker = 1;
+         function giveHint(minimum, maximum) {
+      
+            minimum = 0; maximum = length;
+            if(marker == 1) {
+              array[1000] = maximum;
+              marker = 0;
             }
-            var cycle = Math.floor(max / 2);
+      
+            var cycle = Math.floor(maximum / 2);
+      
             while(cycle != 0) {
-            if(arr[1000] > Math.floor(max / 2)) {
+            if(array[1000] > Math.floor(maximum / 2)) {
+              
             var OK = 1;
             while(OK == 1) {
-            var random = Math.floor(Math.random() * (max - min) + min);
-            if(arr.indexOf(random) == -1) {  
+            var random = Math.floor(Math.random() * (maximum - minimum) + minimum);
+            if(array.indexOf(random) == -1) {  
               OK = 0;
-              arr.push(random);
+              array.push(random);
             } else {
               OK = 1;
             }
@@ -159,14 +234,13 @@
           var random_x = random + 100, random_y = random * 100 + 1000;   
           $('#' + random_x).show();
           $('#' + random_y).hide();
-          arr[1000] -= 1;
+          array[1000] -= 1;
           win++;
           } 
           cycle--;
         }
             return false;
          }
-           
       
    </script>
 </html>
